@@ -544,8 +544,6 @@ void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 			randomW--;
 		}
 	}
-	
-	
 
 	elva[randomE].gender.man = nowGender.man;
 	elva[randomE].gender.woman = nowGender.woman;
@@ -574,7 +572,7 @@ void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 	
 }
 
-void checkHuman(elevator_t* elva,int now) {
+void checkHuman(elevator_t* elva,int now) { // 현재 층에 내릴 사람이 있는지 확인하는 함수
 	
 	int nowFloor = elva[now].floor+10; // -10 ~ -1 && 1 ~ 100  ->  0 ~9 && 11 ~ 110
 	int nowM = elva[now].info[nowFloor].man;
