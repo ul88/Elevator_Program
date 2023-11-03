@@ -598,6 +598,7 @@ void elevatorMove(elevator_t* elva, int* moveFlag, int *moveElva, int* nowFloor,
 
 void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 	int randomE = rand() % 6; // 탑승할 엘리베이터를 지정
+	if (elva[randomE].inspect == 1) return;
 	int randomM = rand() % 10; // 남자 수를 랜덤으로 지정
 	int randomW = rand() % 10; // 여자 수를 랜덤으로 지정
 	info_t nowGender;
@@ -605,9 +606,14 @@ void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 	nowGender.woman = elva[randomE].gender.woman + randomW; //현재 엘리베이터 위치에서 탑승
 
 	if (admin == 2) {
-		printf("\n\n%d번 엘리베이터에 남자 %d명과 여자 %d명이 탑승했습니다.\n",randomE+1,randomM,randomW);
+		if (elva[randomE].floor>=0) {
+			printf("\n\n%d번 엘리베이터에서 %3d층에 남자 %d명과 여자 %d명이 탑승했습니다.\n", randomE + 1, elva[randomE].floor, randomM, randomW);
+		}
+		else {
+			printf("\n\n%d번 엘리베이터에서 B%2d층에 남자 %d명과 여자 %d명이 탑승했습니다.\n", randomE + 1, elva[randomE].floor * -1, randomM, randomW);
+		}
 		printf("%d번 엘리베이터는 현재 %dkg입니다.\n", randomE + 1, nowGender.man * MAN_KG + nowGender.woman * WOMAN_KG);
-		Sleep(1000);
+		Sleep(2000);
 	}
 	
 	while(nowGender.man*MAN_KG + nowGender.woman*WOMAN_KG >= MAX_KG) { //만원일때
@@ -617,7 +623,7 @@ void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 			randomM--;
 			if (admin == 2) {
 				printf("엘리베이터 수용 인원을 초과하여 남자 1명이 하차하였습니다.\n");
-				Sleep(1000);
+				Sleep(2000);
 			}
 		}
 		else {
@@ -625,7 +631,7 @@ void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 			randomW--;
 			if (admin == 2) {
 				printf("엘리베이터 수용 인원을 초과하여 여자 1명이 하차하였습니다.\n");
-				Sleep(1000);
+				Sleep(2000);
 			}
 		}
 	}
@@ -858,6 +864,8 @@ int main()
 
 			if (admin==1) {
 				behaviorAdmin(elva, correctPw, &inspectCnt); // 관리자 모드 용 UI 출력 함수
+				system("cls");
+				continue;
 			}
 			else {
 				userPrint(elva, moveElva, upButton, downButton, nowFloor); //기본 UI 출력 함수
