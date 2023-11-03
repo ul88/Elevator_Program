@@ -35,6 +35,7 @@ typedef struct elevator { //배열만으로는 필요한 데이터를 다 저장하기에는 복잡하�
 	info_t info[TOTAL_FLOOR+1]; // 내릴 사람의 위치를 저장하기 위해 층수를 기준으로 배열을 추가로 생성
 }elevator_t;
 
+int admin = 0; // 어드민 권한에 대한 변수이므로 전역변수 처리
 
 void init(elevator_t* elva) { //초기화
 	for (int i = 0; i < 6; i++) {
@@ -69,6 +70,10 @@ void init(elevator_t* elva) { //초기화
 }
 
 void userPrint(elevator_t* elva, int elvaIdx,int upButton, int downButton, int nowFloor) { //엘리베이터 출력
+	if (admin == 2) {
+		printf("\t**관리자 모드입니다.**\n");
+		printf("F3을 누르면 관리자 모드 전용 명령어를 사용할 수 있습니다.\n");
+	}
 	printf("위쪽 방향키를 누르면 상층으로 향하는 엘리베이터를 호출할 수 있습니다.\n");
 	printf("아래쪽 방향키를 누르면 하층으로 향하는 엘리베이터를 호출할 수 있습니다.\n");
 	printf("ESC를 누르면 프로그램을 종료할 수 있습니다.\n");
@@ -203,7 +208,7 @@ void changeStr(char* str, char* comStr) { // 문자열 교환 함수
 	}
 }
 
-void password(int* admin, char* correctPw) { // 비밀번호 입력 함수
+void password(char* correctPw) { // 비밀번호 입력 함수
 	int pwCnt = 5; 
 	char pw[100] = "";
 	char changePw[10] = "change";
@@ -247,40 +252,103 @@ void password(int* admin, char* correctPw) { // 비밀번호 입력 함수
 		pwCnt--;
 	}
 	if (!checkStr(pw, correctPw)) {
-		*admin = 0;
+		admin = 0;
 		printf("1초 후 관리자 모드를 종료합니다.\n");
 		Sleep(1000);
 		return;
 	}
 	else {
-		*admin = 2;
+		admin = 2;
 		printf("1초 후 관리자 모드를 시작합니다.\n");
 		Sleep(1000);
 	}
 }
 
-void adminPrint(elevator_t* elva, int *admin, char *correctPw, int *inspectCnt) { //관리자 모드 함수
-	if (*admin == 1) {
-		password(admin, correctPw); // 비밀번호 입력 함수
+void behaviorAdmin(elevator_t* elva, char *correctPw, int *inspectCnt) { //관리자 모드 함수
+	if (admin == 1) {
+		password(correctPw); // 비밀번호 입력 함수
 	}
 	else {
-		//해당 엘리베이터에서 어느 층에 누가 내리는 지
-		//해당 엘리베이터가 어떤 층을 방문했을 때 몇 명의 사람이 탑승하는 지
-		//엘리베이터 점검을 시킬 수 있어야함 (2대까지)
-		//for (int i = 0; i < 6; i++) {
-		//	int nowF = elva[i].floor + 10; //-10~100까지 0은 제외 상층은 0~99 하층은 100~109
-		//	int nowM = elva[i].info[nowF].man;
-		//	int nowW = elva[i].info[nowF].woman;
-		//	
-		//	printf("%d번 엘리베이터\n", i + 1);
-		//	printf("층 : %d\n", elva[i].floor);
-		//	printf("내려야하는 사람\n");
-		//	printf("남자 : %d\n", nowM);
-		//	printf("여자 : %d\n\n", nowW);
+		//admin == 2일때 F3을 눌렀다면 관리자 전용 명령어를 사용할 수 있도록 함
+		int flag = 0;
 
-		//}
-		for (int i = 0; i < 110; i++) {
-			printf("%d층 : %d %d\n",i, elva[2].info[i].man, elva[2].info[i].woman);
+		printf("실행할 명령어를 선택하세요.\n");
+		printf("0. 명령어 선택 종료\n");
+		printf("1. 엘리베이터 점검\n");
+		printf("2. 엘리베이터가 가야할 층 나열\n");
+		scanf_s("%d",&flag);
+		if (flag == 0) {
+			return;
+		}
+		else if (flag == 1) {
+			int yes = 0;
+			printf("엘리베이터 점검을 하시겠습니까? (현재 점검 중인 엘리베이터 : %d 개) (예: 1, 아니오: 0)\n", *inspectCnt);
+			scanf_s("%d",&yes);
+			if (yes == 1) {
+				int cnt = 0;
+				printf("점검할 대수를 선택하세요. (최대 2개)\n");
+				scanf_s("%d", &cnt);
+				while (cnt > 2 || cnt < 0) {
+					printf("잘못된 값을 입력하셨습니다.\n");
+					printf("0 ~ 2사이의 값만 입력해주세요.\n");
+					printf("점검할 대수를 선택하세요. (최대 2개)\n");
+					scanf_s("%d", &cnt);
+				}
+				int select = 0;
+				for (int i = 0; i < cnt; i++) {
+					printf("점검 여부를 선택할 엘리베이터를 골라주세요.(하나씩 선택해주세요.)\n");
+					scanf_s("%d", &select);
+					if (select < 0 || select > 6) {
+						printf("엘리베이터는 1번부터 6번까지만 존재합니다.\n");
+						i--;
+						continue;
+					}
+					if (elva[select - 1].inspect == 0 && *inspectCnt == 2) {
+						printf("점검은 2대까지만 가능합니다.\n");
+						printf("다시 선택해주세요.\n");
+						i--;
+						continue;
+					}
+					else {
+						printf("%d번 엘리베이터의 점검 여부를 전환합니다.\n",select);
+						if (elva[select - 1].inspect == 0) {
+							elva[select - 1].inspect = 1;
+							(*inspectCnt)++;
+						}
+						else {
+							elva[select - 1].inspect = 0;
+							(*inspectCnt)--;
+						}
+					}
+				}
+
+			}
+			else {
+				return;
+			}
+		}
+		else if (flag == 2) {
+			int select = 0;
+			printf("어떤 엘리베이터를 보고 싶나요.\n");
+			scanf_s("%d", &select);
+			while (select < 1 || select > 6) {
+				printf("엘리베이터는 1번부터 6번까지만 존재합니다.\n");
+				scanf_s("%d", &select);
+			}
+			printf("\t--%d 엘리베이터--\n", select);
+			for (int i = 0; i <= TOTAL_FLOOR; i++) {
+				if (i == 10) continue;
+				if (i < 10) {
+					printf("B%2d층\t남자 : %d명\t여자 : %d명\n", (i - 10) * -1, elva[select - 1].info[i].man, elva[select - 1].info[i].woman);
+				}
+				else {
+					printf("%3d층\t남자 : %d명\t여자 : %d명\n", i - 10, elva[select - 1].info[i].man, elva[select - 1].info[i].woman);
+				}
+			}
+			int temp = 0;
+			printf("그만 보시겠습니까? (아무 숫자나 입력하시면 종료됩니다.)\n");
+			scanf_s("%d", &temp);
+			return;
 		}
 	}
 }
@@ -298,6 +366,8 @@ void helpMessage() { // 도움말 출력 함수
 	int flag = 0;
 	system("cls");
 	printf("엘리베이터를 부르는 방법은 위쪽 방향키 또는 아래쪽 방향키를 누르면 됩니다.\n");
+	printf("엘리베이터를 탑승했을 때 왼쪽 방향키를 누르면 그 즉시 문이 닫힙니다.\n");
+	printf("\t\t\t오른쪽 방향키를 누르면 그 즉시 문이 열립니다.\n");
 	printf("ESC를 누르면 프로그램이 종료됩니다.\n");
 	printf("F2를 누르면 관리자 모드를 실행할 수 있습니다.\n");
 	printf("F2를 다시 누르면 관리자 모드가 종료됩니다.\n");
@@ -317,6 +387,7 @@ int checkSpeed(elevator_t *elva,int start,int upButton, int downButton) { // 가�
 	int minIdx= -1; // 가장 최적의 엘리베이터 번호를 저장할 변수
 	int minDir = 1;
 	for (int i = 0; i < 6; i++) {
+		if (elva[i].inspect == 1) continue;
 		if (elva[i].dir == -1) {
 			if (min > abs(elva[i].floor - start)) {
 				min = abs(elva[i].floor - start);
@@ -533,17 +604,32 @@ void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 	nowGender.man = elva[randomE].gender.man + randomM; // 현재 엘리베이터 위치에서 탑승
 	nowGender.woman = elva[randomE].gender.woman + randomW; //현재 엘리베이터 위치에서 탑승
 
+	if (admin == 2) {
+		printf("\n\n%d번 엘리베이터에 남자 %d명과 여자 %d명이 탑승했습니다.\n",randomE+1,randomM,randomW);
+		printf("%d번 엘리베이터는 현재 %dkg입니다.\n", randomE + 1, nowGender.man * MAN_KG + nowGender.woman * WOMAN_KG);
+		Sleep(1000);
+	}
+	
 	while(nowGender.man*MAN_KG + nowGender.woman*WOMAN_KG >= MAX_KG) { //만원일때
 		int flag = rand() % 2; // 내릴 성별을 랜덤으로 지정 (0: 여자, 1: 남자)
 		if (flag) {
 			nowGender.man--;
 			randomM--;
+			if (admin == 2) {
+				printf("엘리베이터 수용 인원을 초과하여 남자 1명이 하차하였습니다.\n");
+				Sleep(1000);
+			}
 		}
 		else {
 			nowGender.woman--;
 			randomW--;
+			if (admin == 2) {
+				printf("엘리베이터 수용 인원을 초과하여 여자 1명이 하차하였습니다.\n");
+				Sleep(1000);
+			}
 		}
 	}
+
 
 	elva[randomE].gender.man = nowGender.man;
 	elva[randomE].gender.woman = nowGender.woman;
@@ -589,11 +675,13 @@ void checkHuman(elevator_t* elva,int now) { // 현재 층에 내릴 사람이 있는지 확인
 	if (elva[now].gender.man == 0 && elva[now].gender.woman == 0) {
 		elva[now].dir = -1;
 	}
-	//if (nowM != 0 || nowW != 0) {
-	//	printf("\n%d번 엘리베이터에서 남자: %d명 여자: %d명이 내렸습니다.\n",now+1,nowM,nowW);
-	//	Sleep(500); //0.5초동안 프로그램을 멈춤
-	//}
-	
+	else {
+		if (admin == 2) {
+			printf("\n\n%d번 엘리베이터에서 %d층에 남자 %d명과 여자 %d명이 내렸습니다.\n", now+1, nowFloor, nowM, nowW);
+			Sleep(1000);
+		}
+	}
+
 }
 
 void checkDirection(elevator_t* elva,int now,int moveElva) {
@@ -673,6 +761,7 @@ void checkDirection(elevator_t* elva,int now,int moveElva) {
 
 void autoMove(elevator_t* elva, int moveElva) {
 	for (int i = 0; i < 6; i++) {
+		if (elva[i].inspect == 1) continue;
 		if (elva[i].floor <= MAX_FLOOR && elva[i].floor >= MIN_FLOOR) {
 			if (elva[i].gender.man == 0 && elva[i].gender.woman == 0) {
 				elva[i].dir = -1;
@@ -710,7 +799,7 @@ int main()
 	//loop : 루프를 돌릴지 말지를 저장하는 변수 (루프 ○ : 1 , 루프 X : 0)
 	//moveFlag : 엘리베이터가 움직일지 안움직일지를 저장하는 변수 (움직임: 1 , 안움직임: 0)
 	//moveElva : 움직이는 엘리베이터의 번호를 저장하는 변수
-	int check = 0, nextFloor = 0, door = 0, gender = 0, help = 0, admin = 0, inspectCnt = 0;
+	int check = 0, nextFloor = 0, door = 0, gender = 0, help = 0, inspectCnt = 0;
 	//check : 엘리베이터 탑승 여부를 저장하는 변수 (탑승: 1 , 탑승거부: 0)
 	//nextFloor : 가고자 하는 층을 저장하는 변수
 	//door : 엘리베이터의 문을 닫을지 말지를 저장하는 변수 (닫음: 1 , 닫지 않음: 0)
@@ -754,7 +843,7 @@ int main()
 					admin = !admin;
 				}
 				else if (key == F3 && admin == 2) { //관리자 모드 상태에서 F3을 누를 시
-
+					behaviorAdmin(elva,correctPw,&inspectCnt);
 				}
 				else if (key == ESC) { //ESC를 눌렀을 때
 					loop = 0;
@@ -767,8 +856,8 @@ int main()
 				continue;
 			}
 
-			if (admin) {
-				adminPrint(elva, &admin, correctPw, &inspectCnt); // 관리자 모드 용 UI 출력 함수
+			if (admin==1) {
+				behaviorAdmin(elva, correctPw, &inspectCnt); // 관리자 모드 용 UI 출력 함수
 			}
 			else {
 				userPrint(elva, moveElva, upButton, downButton, nowFloor); //기본 UI 출력 함수
