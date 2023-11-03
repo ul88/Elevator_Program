@@ -37,7 +37,16 @@ typedef struct elevator { //배열만으로는 필요한 데이터를 다 저장하기에는 복잡하�
 
 int admin = 0; // 어드민 권한에 대한 변수이므로 전역변수 처리
 
+void CursorView()
+{
+	CONSOLE_CURSOR_INFO cursorInfo = { 0, };
+	cursorInfo.dwSize = 1; //커서 굵기 (1 ~ 100)
+	cursorInfo.bVisible = FALSE; //커서 Visible TRUE(보임) FALSE(숨김)
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+}
+
 void init(elevator_t* elva) { //초기화
+	CursorView();
 	for (int i = 0; i < 6; i++) {
 		int randomF = rand() % 110; // 층 수를 랜덤으로 초기화
 		int randomD = rand() % 2; // 방향을 랜덤으로 초기화
@@ -335,20 +344,19 @@ void behaviorAdmin(elevator_t* elva, char *correctPw, int *inspectCnt) { //관리�
 				printf("엘리베이터는 1번부터 6번까지만 존재합니다.\n");
 				scanf_s("%d", &select);
 			}
+			system("mode con cols=100 lines=111");
 			printf("\t--%d 엘리베이터--\n", select);
 			for (int i = 0; i <= TOTAL_FLOOR; i++) {
 				if (i == 10) continue;
 				if (i < 10) {
-					printf("B%2d층\t남자 : %d명\t여자 : %d명\n", (i - 10) * -1, elva[select - 1].info[i].man, elva[select - 1].info[i].woman);
+					printf("B%2d층\t남자 : %3d명\t여자 : %3d명\n", (i - 10) * -1, elva[select - 1].info[i].man, elva[select - 1].info[i].woman);
 				}
 				else {
-					printf("%3d층\t남자 : %d명\t여자 : %d명\n", i - 10, elva[select - 1].info[i].man, elva[select - 1].info[i].woman);
+					printf("%3d층\t남자 : %3d명\t여자 : %3d명\n", i - 10, elva[select - 1].info[i].man, elva[select - 1].info[i].woman);
 				}
 			}
-			int temp = 0;
-			printf("그만 보시겠습니까? (아무 숫자나 입력하시면 종료됩니다.)\n");
-			scanf_s("%d", &temp);
-			return;
+			system("pause");
+			system("mode con cols=100 lines=30");
 		}
 	}
 }
@@ -607,10 +615,10 @@ void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 
 	if (admin == 2) {
 		if (elva[randomE].floor>=0) {
-			printf("\n\n%d번 엘리베이터에서 %3d층에 남자 %d명과 여자 %d명이 탑승했습니다.\n", randomE + 1, elva[randomE].floor, randomM, randomW);
+			printf("\n%d번 엘리베이터에서 %3d층에 남자 %d명과 여자 %d명이 탑승했습니다.\n", randomE + 1, elva[randomE].floor, randomM, randomW);
 		}
 		else {
-			printf("\n\n%d번 엘리베이터에서 B%2d층에 남자 %d명과 여자 %d명이 탑승했습니다.\n", randomE + 1, elva[randomE].floor * -1, randomM, randomW);
+			printf("\n%d번 엘리베이터에서 B%2d층에 남자 %d명과 여자 %d명이 탑승했습니다.\n", randomE + 1, elva[randomE].floor * -1, randomM, randomW);
 		}
 		printf("%d번 엘리베이터는 현재 %dkg입니다.\n", randomE + 1, nowGender.man * MAN_KG + nowGender.woman * WOMAN_KG);
 		Sleep(2000);
@@ -623,7 +631,7 @@ void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 			randomM--;
 			if (admin == 2) {
 				printf("엘리베이터 수용 인원을 초과하여 남자 1명이 하차하였습니다.\n");
-				Sleep(2000);
+				Sleep(1000);
 			}
 		}
 		else {
@@ -631,7 +639,7 @@ void randBoard(elevator_t *elva) { //탑승 수 랜덤으로 추가
 			randomW--;
 			if (admin == 2) {
 				printf("엘리베이터 수용 인원을 초과하여 여자 1명이 하차하였습니다.\n");
-				Sleep(2000);
+				Sleep(1000);
 			}
 		}
 	}
@@ -683,7 +691,7 @@ void checkHuman(elevator_t* elva,int now) { // 현재 층에 내릴 사람이 있는지 확인
 	}
 	else {
 		if (admin == 2) {
-			printf("\n\n%d번 엘리베이터에서 %d층에 남자 %d명과 여자 %d명이 내렸습니다.\n", now+1, nowFloor, nowM, nowW);
+			printf("\n%d번 엘리베이터에서 %d층에 남자 %d명과 여자 %d명이 내렸습니다.\n", now+1, nowFloor, nowM, nowW);
 			Sleep(1000);
 		}
 	}
@@ -796,7 +804,8 @@ void autoMove(elevator_t* elva, int moveElva) {
 
 int main()
 {
-	srand(time(NULL)); //랜덤을 위한 시드값으로 시간을 사용함
+	srand((unsigned int)time(NULL)); //랜덤을 위한 시드값으로 시간을 사용함
+	system("mode con cols=100 lines=30 | title 엘리베이터 프로그램");
 	elevator_t elva[6] = { 0, }; //6대 이므로 6짜리 구조체 배열 생성
 	int upButton=0,downButton=0,nowFloor=1,loop=0,moveFlag = 0,moveElva=-1;
 	//upButton : 위로 향하는 버튼의 상태를 저장하는 변수 (on: 1, off: 0)
@@ -823,6 +832,7 @@ int main()
 	do {
 		if (loop == 0) { //맨 처음 실행되었을 때
 			enter(&loop, &gender); //맨 처음 실행되었을 때 필요한 정보를 받기 위한 함수
+			system("cls");
 		}
 		else {
 			if (_kbhit()) { //키가 눌러져있다면
@@ -858,6 +868,7 @@ int main()
 			
 			if (help) {
 				helpMessage(); // 도움말 UI 출력 함수
+				system("cls");
 				help = 0;
 				continue;
 			}
