@@ -1,6 +1,6 @@
 //·£´ýÀ¸·Î µé¾î°¡¾ßÇÒ °Í. ³²ÀÚÀÇ ¼ö¿Í ¿©ÀÚÀÇ ¼ö Ç×»ó ·£´ýÇÏ°Ô µé¾î°¨.
 //»ç¿ëÀÚ°¡ ¿¤¸®º£ÀÌÅÍ¿¡ Å» °æ¿ì¿¡¸¸ ÃÖ´ë ¼ö¿ë·®À» ³Ñ°Ô ·£´ý ¼ö°¡ ³ª¿Ã ¼ö ÀÖÀ½
-//Å¾½Â°´ÀÌ 0¸íÀÌ µÉ ¶§±îÁö ¿¤¸®º£ÀÌÅÍ´Â ÇÑ ¹æÇâÀ¸·Î¸¸ ÁøÇàµÊ
+//Å¾½Â°´ÀÌ 0¸íÀÌ µÉ ¶§±îÁö ¿¤¸®º£ÀÌÅÍ´Â °è¼Ó ¿òÁ÷ÀÓ
 #include<stdio.h> //Ç¥ÁØ ÀÔÃâ·Â Çì´õ ÆÄÀÏ
 #include<time.h> //·£´ý ¼öÀÇ ½Ãµå¸¦ À§ÇÑ Çì´õ ÆÄÀÏ
 #include<math.h> //Àý´ñ°ª ÇÔ¼ö¸¦ À§ÇÑ Çì´õ ÆÄÀÏ
@@ -21,7 +21,7 @@
 #define MAX_KG 1450 //ÃÖ´ë Å¾½Â ÀÎ¿øÀº 1450kgÀÌ¹Ç·Î 1450À¸·Î ÁöÁ¤
 #define MAN_KG 75 //³²ÀÚÀÇ ¸ö¹«°Ô´Â 75kgÀÌ¹Ç·Î 75·Î ÁöÁ¤
 #define WOMAN_KG 55 //¿©ÀÚÀÇ ¸ö¹«°Ô´Â 55kgÀÌ¹Ç·Î 55·Î ÁöÁ¤
-#define PERIOD_VALUE 30 // »ç¶÷ÀÌ Å¸´Â ÁÖ±â°¡ 15ÃÊ ÀÌ¹Ç·Î 30À¸·Î ÁöÁ¤
+//#define PERIOD_VALUE 30 // »ç¶÷ÀÌ Å¸´Â ÁÖ±â°¡ 15ÃÊ ÀÌ¹Ç·Î 30À¸·Î ÁöÁ¤
 
 typedef struct infoHuman{ //¿¤¸®º£ÀÌÅÍ °¢ Ãþ¸¶´Ù ³»·Á¾ßÇÏ´Â »ç¶÷ÀÇ ¼ö¸¦ ³ªÅ¸³¿
 	int man; // ³²ÀÚÀÇ ¼ö
@@ -36,7 +36,9 @@ typedef struct elevator { //¹è¿­¸¸À¸·Î´Â ÇÊ¿äÇÑ µ¥ÀÌÅÍ¸¦ ´Ù ÀúÀåÇÏ±â¿¡´Â º¹ÀâÇÏ¹
 	info_t info[TOTAL_FLOOR+1]; // ³»¸± »ç¶÷ÀÇ À§Ä¡¸¦ ÀúÀåÇÏ±â À§ÇØ Ãþ¼ö¸¦ ±âÁØÀ¸·Î ¹è¿­À» Ãß°¡·Î »ý¼º
 }elevator_t;
 
-int admin = 0; // °ü¸®ÀÚ ±ÇÇÑ¿¡ ´ëÇÑ º¯¼öÀÌ¹Ç·Î Àü¿ªº¯¼ö Ã³¸®
+int admin = 0, periodValue = 30; 
+// admin : °ü¸®ÀÚ ±ÇÇÑ¿¡ ´ëÇÑ º¯¼öÀÌ¹Ç·Î Àü¿ªº¯¼ö Ã³¸®
+// periodValue : »ç¶÷ÀÌ Å¸´Â ÁÖ±â°¡ 15ÃÊÀÌ¹Ç·Î 30À¸·Î ÃÊ±âÈ­ÇÏ°í Àü¿ªº¯¼ö·Î »ý¼º
 
 void CursorView() // cmd Å©±â¸¦ Á¶ÀýÇÏ´Â ÇÔ¼ö
 {
@@ -286,6 +288,7 @@ void behaviorAdmin(elevator_t* elva, char *correctPw, int *inspectCnt) { //°ü¸®À
 		printf("0. ¸í·É¾î ¼±ÅÃ Á¾·á\n");
 		printf("1. ¿¤¸®º£ÀÌÅÍ Á¡°Ë\n");
 		printf("2. ¿¤¸®º£ÀÌÅÍ°¡ °¡¾ßÇÒ Ãþ ³ª¿­\n");
+		printf("3. ¿¤¸®º£ÀÌÅÍ¿¡ »ç¶÷ÀÌ Å¸´Â ÁÖ±â ¼öÁ¤\n");
 		scanf_s("%d",&flag); // flag ÀÔ·Â
 		if (flag == 0) { // flag°¡ 0ÀÌ¸é ÇÔ¼ö Á¾·á
 			return;
@@ -360,6 +363,21 @@ void behaviorAdmin(elevator_t* elva, char *correctPw, int *inspectCnt) { //°ü¸®À
 			}
 			system("pause"); // 109°³ÀÇ ¿¤¸®º£ÀÌÅÍ¸¦ ´Ù º¸±â¿£ ÃÊ´ÜÀ§·Î´Â ºÎÁ·ÇÒ ¼ö ÀÖÀ¸¹Ç·Î ÇÁ·Î±×·¥À» Àá½Ã Á¤Áö½ÃÅ´
 			system("mode con cols=100 lines=30"); // ±âÁ¸ÀÇ ¿¤¸®º£ÀÌÅÍ È­¸éÀ¸·Î µ¹¾Æ°¡¹Ç·Î cmdÃ¢ÀÇ Å©±â¸¦ ´Ù½Ã Á¶Á¤ÇÔ
+		}
+		else if (flag == 3) {
+			int periodTemp = 0; // ¹Ù²Ü ÁÖ±â¸¦ ÀúÀåÇÒ º¯¼ö »ý¼º
+			printf("¿¤¸®º£ÀÌÅÍ¿¡ ÀÎ¿øÀÌ Å¾½ÂÇÏ´Â ÁÖ±â¸¦ ´Ù½Ã ¼³Á¤ÇØÁÖ¼¼¿ä.\n");
+			scanf_s("%d", &periodTemp); // periodTemp ÀúÀå
+			printf("Å¾½Â ÁÖ±â°¡ %dÃÊ¿¡¼­ %dÃÊ·Î º¯°æµÇ¾ú½À´Ï´Ù.\n", periodValue/2, periodTemp);
+			printf("1ÃÊ ÈÄ µ¹¾Æ°©´Ï´Ù.\n");
+			Sleep(1000); // 1 ÃÊ Á¤Áö
+			periodValue = periodTemp * 2; // 0.5ÃÊ ±âÁØÀÌ¹Ç·Î periodTemp¿¡¼­ 2¸¦ °öÇÑ°Å·Î ±³È¯ÇÑ´Ù.
+		}
+		else { // Àß¸øµÈ ÀÔ·ÂÀ» ÇßÀ» ¶§
+			printf("Àß¸øµÈ ÀÔ·ÂÀ» ÇÏ¼Ì½À´Ï´Ù.\n");
+			printf("1ÃÊ ÈÄ ¸í·É¾î ½ÇÇàÀ» ´Ù½Ã ½ÃÀÛÇÕ´Ï´Ù.\n");
+			Sleep(1000); // 1ÃÊ Á¤Áö
+			behaviorAdmin(elva, correctPw, inspectCnt); // behaviorAdmin()À» ´Ù½Ã ½ÇÇà
 		}
 	}
 }
@@ -481,6 +499,15 @@ void checkElevatorLoc(elevator_t *elva, int *upButton,int *downButton, int *nowF
 			printf("Å¸½Ã°Ú½À´Ï±î? (¿¹: 1 , ¾Æ´Ï¿ä: 0)\n");
 			scanf_s("%d", &check); // check ÀÔ·Â
 			if (check) { // check°¡ 1ÀÌ¸é
+				if (elva[*moveElva].gender.man * MAN_KG + elva[*moveElva].gender.woman * WOMAN_KG + (gender ? MAN_KG : WOMAN_KG) > MAX_KG) { // »ç¿ëÀÚ°¡ Å¾½ÂÇßÀ» ¶§ MAX_KGÀÇ °ªÀ» ÃÊ°úÇßÀ» ¶§
+					printf("¿¤¸®º£ÀÌÅÍ ¼ö¿ë ÀÎ¿øÀ» ÃÊ°úÇÏ¿´½À´Ï´Ù.\n");
+					printf("ÇÏÂ÷ÇÏ½Ê½Ã¿À.\n");
+					Sleep(500); // 0.5ÃÊ ±â´Ù¸®±â
+					*moveElva = -1; // *moveElva °ªÀ» -1·Î ¹Ù²Þ
+					*downButton = 0; // ¾Æ·¡·Î °¡´Â ¹öÆ°À» 0À¸·Î ¹Ù²Þ
+					*upButton = 0; // À§·Î °¡´Â ¹öÆ°À» 0À¸·Î ¹Ù²Þ
+					return;
+				}
 				printf("¿¤¸®º£ÀÌÅÍ¿¡ Å¾½ÂÇÏ¼Ì½À´Ï´Ù.\n");
 				printf("3ÃÊ ÈÄ ¹®ÀÌ ÀÚµ¿À¸·Î ´ÝÈü´Ï´Ù.\n");
 				printf("¹®À» ´Ý°í ½Í´Ù¸é ¿ÞÂÊ ¹æÇâÅ°¸¦\n");
@@ -836,7 +863,7 @@ int main()
 	//help : µµ¿ò¸» È°¼ºÈ­ ¿©ºÎ¸¦ ³ªÅ¸³»´Â º¯¼ö (È°¼ºÈ­: 1 , ºñÈ°¼ºÈ­: 0)
 	//admin : °ü¸®ÀÚ ¸ðµå È°¼ºÈ­ ¿©ºÎ¸¦ ³ªÅ¸³»´Â º¯¼ö (È°¼ºÈ­: 1 , ºñÈ°¼ºÈ­: 0)
 	//inspectCnt : Á¡°Ë ÁßÀÎ ¿¤¸®º£ÀÌÅÍÀÇ °³¼ö¸¦ ÀúÀåÇÏ´Â º¯¼ö
-	int period = PERIOD_VALUE;
+	int period = periodValue;
 	// period : ¿¤¸®º£ÀÌÅÍÀÇ »ç¶÷ÀÌ Å¾½ÂÇÏ´Â ÁÖ±â¸¦ ³ªÅ¸³»´Â º¯¼ö
 	char correctPw[100] = "1234567*"; //°ü¸®ÀÚ¸ðµå ºñ¹Ð¹øÈ£
 
@@ -908,7 +935,7 @@ int main()
 
 			if (period <= 0) { // period°¡ 0º¸´Ù ÀÛ°Å³ª °°À» ¶§
 				randBoard(elva); // Å¾½ÂÇÏ´Â ÇÔ¼ö¸¦ ½ÇÇà
-				period = PERIOD_VALUE; // period¸¦ ´Ù½Ã PERIOD_VALUE·Î ÁöÁ¤
+				period = periodValue; // period¸¦ ´Ù½Ã PERIOD_VALUE·Î ÁöÁ¤
 			}
 			period--; // periodÀÇ °ªÀ» 1¾¿ °¨¼Ò
 			Sleep(500); //0.5ÃÊµ¿¾È ÇÁ·Î±×·¥À» ¸ØÃã
