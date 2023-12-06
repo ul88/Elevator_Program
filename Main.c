@@ -255,7 +255,8 @@ void password(char* correctPw) { // ºñ¹Ð¹øÈ£ ÀÔ·Â ÇÔ¼ö
 		return;
 	}
 
-	while (!checkStr(pw, correctPw) && pwCnt > 0 && strLen(pw) != 1) { // pw¿Í correctPw°¡ ¼­·Î ´Ù¸£¸é¼­ pwCnt°¡ 0º¸´Ù Å©¸é¼­ pwÀÇ ±æÀÌ°¡ 1ÀÌ ¾Æ´Ñ µ¿¾È ¹Ýº¹
+	while (!checkStr(pw, correctPw) && pwCnt > 0 && strLen(pw) != 1) { // pw¿Í correctPw°¡ ¼­·Î ´Ù¸£¸é¼­ 
+																	//pwCnt°¡ 0º¸´Ù Å©¸é¼­ pwÀÇ ±æÀÌ°¡ 1ÀÌ ¾Æ´Ñ µ¿¾È ¹Ýº¹
 		system("cls");
 		printf("ºñ¹Ð¹øÈ£°¡ Æ²·È½À´Ï´Ù.\n");
 		printf("- %d¹ø ³²¾Ò½À´Ï´Ù. -\n", pwCnt);
@@ -291,6 +292,7 @@ void behaviorAdmin(elevator_t* elva, char *correctPw, int *inspectCnt) { //°ü¸®À
 		printf("3. ¿¤¸®º£ÀÌÅÍ¿¡ »ç¶÷ÀÌ Å¸´Â ÁÖ±â ¼öÁ¤\n");
 		scanf_s("%d",&flag); // flag ÀÔ·Â
 		if (flag == 0) { // flag°¡ 0ÀÌ¸é ÇÔ¼ö Á¾·á
+			system("cls");
 			return;
 		}
 		else if (flag == 1) { // flag°¡ 1ÀÌ¸é
@@ -327,15 +329,23 @@ void behaviorAdmin(elevator_t* elva, char *correctPw, int *inspectCnt) { //°ü¸®À
 						printf("%d¹ø ¿¤¸®º£ÀÌÅÍÀÇ Á¡°Ë ¿©ºÎ¸¦ ÀüÈ¯ÇÕ´Ï´Ù.\n",select);
 						if (elva[select - 1].inspect == 0) { // Á¡°Ë ÁßÀÌ ¾Æ´Ò ¶§
 							elva[select - 1].inspect = 1; // Á¡°Ë ÁßÀ¸·Î ¹Ù²Þ
+							printf("%d¹ø ¿¤¸®º£ÀÌÅÍ°¡ Á¡°Ë ÁßÀÌ¹Ç·Î %d¸íÀÌ ÇÏÂ÷Çß½À´Ï´Ù.\n\n",select,elva[select-1].gender.man+elva[select-1].gender.woman);
+							elva[select - 1].gender.man = 0; // Á¡°Ë ÁßÀÌ¹Ç·Î ³²ÀÚ ¼ö¸¦ 0À¸·Î ¹Ù²Þ
+							elva[select - 1].gender.woman = 0; // Á¡°Ë ÁßÀÌ¹Ç·Î ¿©ÀÚ ¼ö¸¦ 0À¸·Î ¹Ù²Þ
+							for (int j = 0; j < TOTAL_FLOOR; j++) { // ³²ÀÚ¿Í ¿©ÀÚ°¡ ÇÏÂ÷ÇßÀ¸¹Ç·Î info ¹è¿­µµ ´Ù 0À¸·Î ÃÊ±âÈ­ÇØ¾ßÇÏ¹Ç·Î TOTAL_FLOOR¸¸Å­ ¹Ýº¹ÇÑ´Ù.
+								elva[select - 1].info[j].man = 0; // 0À¸·Î ¹Ù²Þ
+								elva[select - 1].info[j].woman = 0; // 0À¸·Î ¹Ù²Þ
+							}
 							(*inspectCnt)++; // Á¡°Ë ÁßÀÎ ¿¤¸®º£ÀÌÅÍ°¡ ´Ã¾î³µÀ¸¹Ç·Î 1 Áõ°¡
 						}
 						else { // Á¡°Ë ÁßÀÏ ¶§
 							elva[select - 1].inspect = 0; // Á¡°Ë ÁßÀÌ ¾Æ´ÔÀ¸·Î ¹Ù²Þ
 							(*inspectCnt)--; // Á¡°Ë ÁßÀÌ ¾Æ´Ñ ¿¤¸®º£ÀÌÅÍ°¡ ´Ã¾î³µÀ¸¹Ç·Î 1 °¨¼Ò
 						}
+						Sleep(1000); // 1ÃÊ Á¤Áö
 					}
 				}
-
+				system("cls");
 			}
 			else { // yes°¡ 0ÀÌ¶ó¸é
 				return;
@@ -362,6 +372,7 @@ void behaviorAdmin(elevator_t* elva, char *correctPw, int *inspectCnt) { //°ü¸®À
 				}
 			}
 			system("pause"); // 109°³ÀÇ ¿¤¸®º£ÀÌÅÍ¸¦ ´Ù º¸±â¿£ ÃÊ´ÜÀ§·Î´Â ºÎÁ·ÇÒ ¼ö ÀÖÀ¸¹Ç·Î ÇÁ·Î±×·¥À» Àá½Ã Á¤Áö½ÃÅ´
+			system("cls");
 			system("mode con cols=100 lines=30"); // ±âÁ¸ÀÇ ¿¤¸®º£ÀÌÅÍ È­¸éÀ¸·Î µ¹¾Æ°¡¹Ç·Î cmdÃ¢ÀÇ Å©±â¸¦ ´Ù½Ã Á¶Á¤ÇÔ
 		}
 		else if (flag == 3) {
@@ -371,12 +382,14 @@ void behaviorAdmin(elevator_t* elva, char *correctPw, int *inspectCnt) { //°ü¸®À
 			printf("Å¾½Â ÁÖ±â°¡ %dÃÊ¿¡¼­ %dÃÊ·Î º¯°æµÇ¾ú½À´Ï´Ù.\n", periodValue/2, periodTemp);
 			printf("1ÃÊ ÈÄ µ¹¾Æ°©´Ï´Ù.\n");
 			Sleep(1000); // 1 ÃÊ Á¤Áö
+			system("cls");
 			periodValue = periodTemp * 2; // 0.5ÃÊ ±âÁØÀÌ¹Ç·Î periodTemp¿¡¼­ 2¸¦ °öÇÑ°Å·Î ±³È¯ÇÑ´Ù.
 		}
 		else { // Àß¸øµÈ ÀÔ·ÂÀ» ÇßÀ» ¶§
 			printf("Àß¸øµÈ ÀÔ·ÂÀ» ÇÏ¼Ì½À´Ï´Ù.\n");
 			printf("1ÃÊ ÈÄ ¸í·É¾î ½ÇÇàÀ» ´Ù½Ã ½ÃÀÛÇÕ´Ï´Ù.\n");
 			Sleep(1000); // 1ÃÊ Á¤Áö
+			system("cls");
 			behaviorAdmin(elva, correctPw, inspectCnt); // behaviorAdmin()À» ´Ù½Ã ½ÇÇà
 		}
 	}
@@ -406,7 +419,7 @@ void helpMessage() { // µµ¿ò¸» Ãâ·Â ÇÔ¼ö
 		return; // ¸®ÅÏ
 	}
 	else {
-		helpMessage(); // 1À» ÀÔ·ÂÇÒ ¶§±îÁö Àç±Í
+		helpMessage(); // 1À» ÀÔ·ÂÇÒ ¶§±î+ Àç±Í
 	}
 }
 
@@ -882,6 +895,7 @@ int main()
 				if (key == -32) { // key°¡ -32ÀÏ ¶§
 					key = _getch(); // key ÀÔ·Â
 				}
+
 				else if (key == 0) { // key°¡ 0ÀÏ ¶§
 					key = _getch(); // key ÀÔ·Â
 				}
