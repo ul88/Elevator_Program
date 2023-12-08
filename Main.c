@@ -549,8 +549,8 @@ void checkElevatorLoc(elevator_t *elva, int *upButton,int *downButton, int *nowF
 				printf("문이 닫힙니다.\n");
 				printf("어느 층으로 가시겠습니까?(%d ~ %d까지의 층만 존재합니다.)\n", MIN_FLOOR, MAX_FLOOR);
 				scanf_s("%d", nextFloor); // nextFloor 입력
-				while (*nextFloor == *nowFloor || (*upButton && *nextFloor < *nowFloor && elva[*moveElva].dir==1) ||
-					(*downButton && *nextFloor > *nowFloor && elva[*moveElva].dir==0) ||
+				while (*nextFloor == *nowFloor || (*upButton && *nextFloor < *nowFloor) ||
+					(*downButton && *nextFloor > *nowFloor) ||
 					(*nextFloor < MIN_FLOOR || *nextFloor > MAX_FLOOR)) { // 현재 층과 같을 때 또는 위로 가는 버튼을 눌렀으면서 현재 층보다 낮은 층을 입력했을 떄 또는
 					// 아래로 가는 버튼을 눌렀으면서 현재 층보다 높은 층을 입력했을 때 또는
 					// 최소 층과 최대 층의 범위를 넘어갔을 때인 동안 계속 반복
