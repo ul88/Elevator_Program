@@ -743,7 +743,12 @@ void checkHuman(elevator_t* elva,int now) { // 현재 층에 내릴 사람이 있는지 확인
 	else { // 탑승 중인 사람이 있다면
 		if (admin == 2) { // admin이 2일 때
 			// 몇 명 내렸는 지 출력해서 보여줌
-			printf("\n%d번 엘리베이터에서 %d층에 남자 %d명과 여자 %d명이 내렸습니다.\n", now+1, nowFloor, nowM, nowW);
+			if (elva[now].floor > 0) {
+				printf("\n%d번 엘리베이터에서 %d층에 남자 %d명과 여자 %d명이 내렸습니다.\n", now+1, elva[now].floor, nowM, nowW);
+			}
+			else {
+				printf("\n%d번 엘리베이터에서 B%d층에 남자 %d명과 여자 %d명이 내렸습니다.\n", now + 1, -elva[now].floor, nowM, nowW);
+			}
 			Sleep(1000);
 		}
 	}
